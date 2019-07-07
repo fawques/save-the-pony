@@ -21,11 +21,24 @@ namespace SaveThePony
             this.ponyClient = ponyClient;
         }
 
+        public async Task<Maze> Create(int width, int height, string ponyName, int difficulty)
+        {
+            var response = await ponyClient.CreateMaze(width, height, ponyName, difficulty);
+            var creationDefinition = new { maze_id = Guid.Empty };
+            var creationResponse = JsonConvert.DeserializeAnonymousType(await response.Content.ReadAsStringAsync(), creationDefinition);
+
+            return await FromID(creationResponse.maze_id);
+        }
+
         public async Task<Maze> FromID(Guid mapId)
         {
             var response = await ponyClient.GetMaze(mapId);
             var apiMaze = JsonConvert.DeserializeObject<APIMaze>(await response.Content.ReadAsStringAsync());
+            return BuildMaze(apiMaze);
+        }
 
+        Maze BuildMaze(APIMaze apiMaze)
+        {
             int width = apiMaze.size[0];
             int height = apiMaze.size[1];
             MazeTile[,] tiles = new MazeTile[width, height];
@@ -58,6 +71,7 @@ namespace SaveThePony
             };
             return maze;
         }
+
         int GetIndex(int x, int y, int width)
         {
             return y * width + x;

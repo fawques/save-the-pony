@@ -6,6 +6,7 @@ namespace SaveThePony
 {
     public interface IPonyAPIClient
     {
+        Task<HttpResponseMessage> CreateMaze(int width, int height, string ponyName, int difficulty);
         Task<HttpResponseMessage> GetMaze(Guid mazeId);
     }
 }

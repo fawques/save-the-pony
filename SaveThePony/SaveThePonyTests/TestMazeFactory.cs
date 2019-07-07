@@ -28,6 +28,38 @@ namespace Tests
         }
 
         [Test]
+        public async Task BuildMaze_New_ApiCalled()
+        {
+            Guid mazeId = Guid.NewGuid();
+            Mock<IPonyAPIClient> mockPonyAPI = new Mock<IPonyAPIClient>();
+            mazeFactory = new MazeFactory(mockPonyAPI.Object);
+            int width = 15;
+            int height = 15;
+            int difficulty = 5;
+            string pony = "PonyName";
+
+            mockPonyAPI.Setup(p => p.CreateMaze(width, height, pony, difficulty)).ReturnsAsync(
+                new HttpResponseMessage
+                {
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Content = new StringContent("{\"maze_id\": \"" + mazeId + "\"}", Encoding.UTF8, "application/json")
+                });
+            mockPonyAPI.Setup(p => p.GetMaze(mazeId)).ReturnsAsync(
+                new HttpResponseMessage
+                {
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Content = new StringContent(mazeJson, Encoding.UTF8, "application/json")
+                });
+
+            Maze maze = await mazeFactory.Create(width, height, pony, difficulty);
+
+            mockPonyAPI.Verify(p => p.CreateMaze(width, height, pony, difficulty), Times.Once);
+            mockPonyAPI.Verify(p => p.GetMaze(mazeId), Times.Once);
+            Assert.AreEqual(width, maze.Width);
+            Assert.AreEqual(height, maze.Height);
+        }
+
+        [Test]
         public async Task BuildMaze_FromExistingID_ApiCalled()
         {
             Guid mazeId = Guid.NewGuid();
