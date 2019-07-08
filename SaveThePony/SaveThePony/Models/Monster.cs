@@ -1,8 +1,7 @@
 ﻿namespace SaveThePony.Models
 {
-    public class Monster
+    public class Monster : MazeObject
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public Monster(int x, int y) : base(x, y) { }
     }
 }

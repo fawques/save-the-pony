@@ -33,7 +33,13 @@ namespace SaveThePony
         public async Task<Maze> FromID(Guid mapId)
         {
             var response = await ponyClient.GetMaze(mapId);
-            var apiMaze = JsonConvert.DeserializeObject<APIMaze>(await response.Content.ReadAsStringAsync());
+            string jsonMaze = await response.Content.ReadAsStringAsync();
+            return FromJson(jsonMaze);
+        }
+
+        public Maze FromJson(string jsonMaze)
+        {
+            var apiMaze = JsonConvert.DeserializeObject<APIMaze>(jsonMaze);
             return BuildMaze(apiMaze);
         }
 
@@ -60,14 +66,18 @@ namespace SaveThePony
             int domokunX = apiMaze.domokun[0] / width;
             int domokunY = apiMaze.domokun[0] % width;
 
+            int endpointX = apiMaze.endPont[0] / width;
+            int endpointY = apiMaze.endPont[0] % width;
+
             var maze = new Maze
             {
                 Width = width,
                 Height = height,
                 Difficulty = apiMaze.difficulty,
                 Tiles = tiles,
-                Pony = new Pony { X = ponyX, Y = ponyY },
-                Domokun = new Monster { X = domokunX, Y = domokunY }
+                Pony = new Pony(ponyX, ponyY),
+                Domokun = new Monster(domokunX, domokunY),
+                EndPoint = new Point(endpointX, endpointY)
             };
             return maze;
         }

@@ -13,7 +13,12 @@ namespace SaveThePony.Models
         public int Height { get; set; }
         public Pony Pony { get; set; }
         public Monster Domokun { get; set; }
+        public Point EndPoint { get; set; }
         public int Difficulty { get; set; }
 
+        public MazeTile GetTile(Point position)
+        {
+            return Tiles[position.X, position.Y];
+        }
     }
 }

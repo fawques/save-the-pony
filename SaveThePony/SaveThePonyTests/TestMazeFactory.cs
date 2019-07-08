@@ -98,10 +98,9 @@ namespace Tests
             Assert.AreEqual(15, maze.Width);
             Assert.AreEqual(15, maze.Height);
             Assert.AreEqual(15 * 15, maze.Tiles.Length);
-            Assert.AreEqual(4, maze.Pony.X);
-            Assert.AreEqual(5, maze.Pony.Y);
-            Assert.AreEqual(4, maze.Domokun.X);
-            Assert.AreEqual(10, maze.Domokun.Y);
+            Assert.AreEqual(new Point(4, 5), maze.Pony.Position);
+            Assert.AreEqual(new Point(4, 10), maze.Domokun.Position);
+            Assert.AreEqual(new Point(10, 14), maze.EndPoint);
             Assert.AreEqual(new Point(0, 1), maze.Tiles[0, 0].AccessibleTiles.First());
             Assert.Contains(new Point(2, 0), maze.Tiles[3, 0].AccessibleTiles);
             Assert.Contains(new Point(4, 0), maze.Tiles[3, 0].AccessibleTiles);

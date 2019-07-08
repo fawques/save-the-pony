@@ -1,8 +1,8 @@
 ﻿namespace SaveThePony.Models
 {
-    public class Pony
+    public class Pony : MazeObject
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public Pony(int x, int y) : base(x, y) { }
+        public string Name { get; set; }
     }
 }

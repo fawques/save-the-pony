@@ -2,15 +2,12 @@
 
 namespace SaveThePony.Models
 {
-    public class MazeTile
+    public class MazeTile : MazeObject
     {
-        public MazeTile(int x, int y)
+        public MazeTile(int x, int y) : base(x, y)
         {
-            Position = new Point(x, y);
             AccessibleTiles = new List<Point>();
         }
-
-        public Point Position { get; set; }
 
         public List<Point> AccessibleTiles { get; set; }
     }
