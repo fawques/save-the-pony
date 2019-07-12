@@ -58,7 +58,8 @@ namespace SaveThePony.Services
             SimplePriorityQueue<Node, int> openSet = new SimplePriorityQueue<Node, int>();
             HashSet<Point> closedSet = new HashSet<Point>();
 
-            openSet.Enqueue(new Node(maze.GetTile(maze.Pony.Position), null), 0);
+            // Start from the endpoint, so that later traversing the parents we get the real path
+            openSet.Enqueue(new Node(maze.GetTile(maze.EndPoint), null), 0);
 
             Node finalNode = null;
 
@@ -75,7 +76,7 @@ namespace SaveThePony.Services
                     }
 
                     Node adjacentNode = new Node(maze.GetTile(point), currentNode, currentNode.G + 1);
-                    if (point.Equals(maze.EndPoint))
+                    if (point.Equals(maze.Pony.Position))
                     {
                         finalNode = adjacentNode;
                         break;
