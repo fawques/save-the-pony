@@ -10,7 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tests
+namespace SaveThePonyTests
 {
     public class TestMazeFactory
     {

@@ -3,10 +3,8 @@ using NUnit.Framework;
 using SaveThePony;
 using SaveThePony.Models;
 using SaveThePony.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using StreamReader = System.IO.StreamReader;
 
 namespace SaveThePonyTests
@@ -156,6 +154,56 @@ namespace SaveThePonyTests
             Path path = solver.Solve(maze);
 
             Assert.AreEqual(0, path.Length);
+        }
+
+        [Test]
+        public void GetShortestPath_MonsterTooNear_NoPossiblePath()
+        {
+            MazeFactory factory = new MazeFactory(Mock.Of<IPonyAPIClient>());
+            Maze maze = factory.FromJson(mazeJson);
+            // This is seven tiles away of the endpoint, from there the paths collide
+            maze.Domokun.Position = new Point(9, 14);
+            solver = new MazeSolver();
+
+            Path path = solver.Solve(maze);
+
+            Assert.AreEqual(0, path.Length);
+        }
+
+        [Test]
+        public void GetShortestPath_MonsterTooFarAway_PathIsShortest()
+        {
+            MazeFactory factory = new MazeFactory(Mock.Of<IPonyAPIClient>());
+            Maze maze = factory.FromJson(mazeJson);
+            // This behind the pony, so the monster will never catch the pony
+            maze.Domokun.Position = new Point(5, 3);
+            solver = new MazeSolver();
+
+            Path path = solver.Solve(maze);
+
+            Path expectedPath = new Path { Source = maze.Pony.Position, Destination = maze.EndPoint };
+            expectedPath.Steps = new List<Point>
+            {
+                new Point(5,4),
+                new Point(4,4),
+                new Point(4,3),
+                new Point(4,2),
+                new Point(5,2),
+                new Point(6,2),
+                new Point(6,1),
+                new Point(5,1),
+                new Point(4,1),
+                new Point(4,0),
+                new Point(3,0),
+                new Point(3,1),
+            };
+
+            Assert.AreEqual(expectedPath.Steps, path.Steps.Take(12));
+            Assert.AreEqual(82, path.Length);
+            Assert.AreEqual(maze.Pony.Position, path.Source);
+            Assert.AreEqual(maze.Pony.Position, path.Steps.First());
+            Assert.AreEqual(maze.EndPoint, path.Destination);
+            Assert.AreEqual(maze.EndPoint, path.Steps.Last());
         }
 
         Maze CreateMaze(int width, int height, int difficulty, Point ponyPosition, Point endPoint, Point monsterPosition = null, List<Point> walls = null)

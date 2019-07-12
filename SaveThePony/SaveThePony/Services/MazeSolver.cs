@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Priority_Queue;
 using SaveThePony.Models;
 
@@ -46,20 +47,33 @@ namespace SaveThePony.Services
             {
                 Source = maze.Pony.Position,
                 Destination = maze.EndPoint,
-                Steps = CalculatePath(maze)
+                Steps = CalculatePath(maze, maze.Pony.Position, maze.EndPoint, maze.Domokun.Position)
             };
+
+            var domokunPath = CalculatePath(maze, maze.Domokun.Position, maze.Pony.Position);
+
+            for (int i = 0; i < Math.Min(path.Length, domokunPath.Count()); i++)
+            {
+                if (path.Steps.ElementAt(i).Equals(domokunPath.ElementAt(i)) ||
+                    domokunPath.ElementAt(i).Equals(path.Steps.ElementAtOrDefault(i + 1)))
+                {
+                    // Paths collide, the pony will die
+                    path.Steps = new List<Point>();
+                    break;
+                }
+            }
 
             return path;
         }
 
-        IEnumerable<Point> CalculatePath(Maze maze)
+        IEnumerable<Point> CalculatePath(Maze maze, Point source, Point destination, Point avoidPoint = null)
         {
             List<Point> pathSteps = new List<Point>();
             SimplePriorityQueue<Node, int> openSet = new SimplePriorityQueue<Node, int>();
             HashSet<Point> closedSet = new HashSet<Point>();
 
             // Start from the endpoint, so that later traversing the parents we get the real path
-            openSet.Enqueue(new Node(maze.GetTile(maze.EndPoint), null), 0);
+            openSet.Enqueue(new Node(maze.GetTile(destination), null), 0);
 
             Node finalNode = null;
 
@@ -76,20 +90,20 @@ namespace SaveThePony.Services
                         continue;
                     }
 
-                    if (point.Equals(maze.Domokun.Position))
+                    if (point.Equals(avoidPoint))
                     {
                         // This tile is not accessible
                         continue;
                     }
 
                     Node adjacentNode = new Node(maze.GetTile(point), currentNode, currentNode.G + 1);
-                    if (point.Equals(maze.Pony.Position))
+                    if (point.Equals(source))
                     {
                         finalNode = adjacentNode;
                         break;
                     }
 
-                    int newPriority = CalculatePriority(point, maze.EndPoint, adjacentNode.G);
+                    int newPriority = CalculatePriority(point, destination, adjacentNode.G);
                     if (openSet.Contains(adjacentNode))
                     {
                         if (newPriority < openSet.GetPriority(adjacentNode))
@@ -119,6 +133,7 @@ namespace SaveThePony.Services
                 pathSteps.Add(current.Tile.Position);
                 current = current.Parent;
             }
+
             return pathSteps;
         }
 
