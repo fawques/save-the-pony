@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SaveThePony.Models;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -48,6 +49,19 @@ namespace SaveThePony.Services
             response.EnsureSuccessStatusCode();
 
             return response;
+        }
+
+        public async Task<HttpResponseMessage> PostStep(Guid mazeId, string direction)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, $"/{mazeId}");
+
+            string json = JsonConvert.SerializeObject(new { direction });
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+
+            return response; ;
         }
     }
 }
