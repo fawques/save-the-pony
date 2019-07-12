@@ -16,6 +16,7 @@ namespace SaveThePonyTests
         MazeSolver solver;
 
         string mazeJson;
+        readonly Point OUT_OF_BOUNDS = new Point(-1, -1);
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -42,7 +43,11 @@ namespace SaveThePonyTests
         [Test]
         public void GetShortestPath_MazeWithoutWalls_PathIsManhattanDistance()
         {
-            Maze maze = CreateMaze();
+            Maze maze = CreateMaze(width: 15,
+                height: 15,
+                difficulty: 0,
+                ponyPosition: new Point(0, 0),
+                endPoint: new Point(14, 14));
             solver = new MazeSolver();
 
             Path path = solver.Solve(maze);
@@ -58,7 +63,20 @@ namespace SaveThePonyTests
         [Test]
         public void GetShortestPath_SmallMaze_PathIsShortest()
         {
-            Maze maze = CreateRectangularMaze();
+            Maze maze = CreateMaze(width: 4,
+                height: 10,
+                difficulty: 0,
+                ponyPosition: new Point(1, 2),
+                endPoint: new Point(2, 8),
+                monsterPosition: null,
+                walls: new List<Point> {
+                    new Point(0,3),
+                    new Point(1,3),
+                    new Point(2,3),
+                    new Point(1,5),
+                    new Point(2,5),
+                    new Point(3,5)
+                });
             solver = new MazeSolver();
 
             Path path = solver.Solve(maze);
@@ -91,7 +109,7 @@ namespace SaveThePonyTests
         }
 
         [Test]
-        public void GetShortestPath_RealMazeNoMonster_PathIsShortest()
+        public void GetShortestPath_NoMonster_PathIsShortest()
         {
             MazeFactory factory = new MazeFactory(Mock.Of<IPonyAPIClient>());
             Maze maze = factory.FromJson(mazeJson);
@@ -126,67 +144,38 @@ namespace SaveThePonyTests
             Assert.AreEqual(maze.EndPoint, path.Steps.Last());
         }
 
-        Maze CreateMaze()
+        [Test]
+        public void GetShortestPath_MonsterInPath_NoPossiblePath()
         {
-            Maze maze = new Maze
-            {
-                Width = 15,
-                Height = 15,
-                Difficulty = 0,
-                Tiles = new MazeTile[15, 15],
-                Pony = new Pony(0, 0),
-                EndPoint = new Point(14, 14)
-            };
+            MazeFactory factory = new MazeFactory(Mock.Of<IPonyAPIClient>());
+            Maze maze = factory.FromJson(mazeJson);
+            // 4,0 is in the middle of the path, at position 9
+            maze.Domokun.Position = new Point(4, 0);
+            solver = new MazeSolver();
 
-            for (int row = 0; row < maze.Height; row++)
-            {
-                for (int column = 0; column < maze.Width; column++)
-                {
+            Path path = solver.Solve(maze);
 
-                    MazeTile tile = new MazeTile(column, row);
-                    maze.Tiles[column, row] = tile;
-
-                    if (tile.Position.X != 0)
-                    {
-                        tile.AccessibleTiles.Add(new Point(tile.Position.X - 1, tile.Position.Y));
-                    }
-                    if (tile.Position.Y != 0)
-                    {
-                        tile.AccessibleTiles.Add(new Point(tile.Position.X, tile.Position.Y - 1));
-                    }
-                    if (tile.Position.X != maze.Width - 1)
-                    {
-                        tile.AccessibleTiles.Add(new Point(tile.Position.X + 1, tile.Position.Y));
-                    }
-                    if (tile.Position.Y != maze.Height - 1)
-                    {
-                        tile.AccessibleTiles.Add(new Point(tile.Position.X, tile.Position.Y + 1));
-                    }
-                }
-            }
-            return maze;
+            Assert.AreEqual(0, path.Length);
         }
 
-        Maze CreateRectangularMaze()
+        Maze CreateMaze(int width, int height, int difficulty, Point ponyPosition, Point endPoint, Point monsterPosition = null, List<Point> walls = null)
         {
             Maze maze = new Maze
             {
-                Width = 4,
-                Height = 10,
-                Difficulty = 0,
-                Tiles = new MazeTile[4, 10],
-                Pony = new Pony(1, 2),
-                EndPoint = new Point(2, 8)
+                Width = width,
+                Height = height,
+                Difficulty = difficulty,
+                Tiles = new MazeTile[width, height],
+                Pony = new Pony(ponyPosition),
+                EndPoint = endPoint,
+                Domokun = new Monster(monsterPosition ?? OUT_OF_BOUNDS)
             };
 
-            List<Point> walls = new List<Point> {
-                new Point(0,3),
-                new Point(1,3),
-                new Point(2,3),
-                new Point(1,5),
-                new Point(2,5),
-                new Point(3,5)
-            };
+            if (walls is null)
+            {
+                walls = new List<Point>();
+
+            }
 
             for (int row = 0; row < maze.Height; row++)
             {

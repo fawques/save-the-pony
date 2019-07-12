@@ -72,6 +72,13 @@ namespace SaveThePony.Services
                 {
                     if (closedSet.Contains(point))
                     {
+                        // Already traversed
+                        continue;
+                    }
+
+                    if (point.Equals(maze.Domokun.Position))
+                    {
+                        // This tile is not accessible
                         continue;
                     }
 
