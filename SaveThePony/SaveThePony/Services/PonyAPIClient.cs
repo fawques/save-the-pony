@@ -61,7 +61,7 @@ namespace SaveThePony.Services
             var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            return response; ;
+            return response;
         }
     }
 }

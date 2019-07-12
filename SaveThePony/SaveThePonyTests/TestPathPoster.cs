@@ -34,19 +34,46 @@ namespace SaveThePonyTests
             };
 
             Mock<IPonyAPIClient> mockPonyAPI = new Mock<IPonyAPIClient>();
-            MockSequence mockSequence = new MockSequence();
 
-            mockPonyAPI.InSequence(mockSequence).Setup(api => api.PostStep(mazeId, "south"));
-            mockPonyAPI.InSequence(mockSequence).Setup(api => api.PostStep(mazeId, "south"));
-            mockPonyAPI.InSequence(mockSequence).Setup(api => api.PostStep(mazeId, "south"));
-            mockPonyAPI.InSequence(mockSequence).Setup(api => api.PostStep(mazeId, "south"));
-            mockPonyAPI.InSequence(mockSequence).Setup(api => api.PostStep(mazeId, "south"));
+            var directions = new List<string>();
+            mockPonyAPI.Setup(m => m.PostStep(mazeId, Capture.In(directions)));
 
             pathPoster = new PathPoster(mockPonyAPI.Object);
 
             await pathPoster.Post(path);
 
-            mockPonyAPI.Verify(api => api.PostStep(mazeId, "down"), Times.Exactly(5));
+            Assert.AreEqual(new[] { "south", "south", "south", "south", "south" }, directions);
+        }
+
+        [Test]
+        public async Task Post_AllPossibleDirections_SuccessfullyPosted()
+        {
+            Guid mazeId = Guid.NewGuid();
+            Path path = new Path
+            {
+                MazeId = mazeId,
+                Source = new Point(3, 3),
+                Destination = new Point(3, 4),
+                Steps = new List<Point>
+                {
+                    new Point(3, 4),
+                    new Point(4, 4),
+                    new Point(4, 3),
+                    new Point(3, 3),
+                    new Point(3, 3),
+                }
+            };
+
+            Mock<IPonyAPIClient> mockPonyAPI = new Mock<IPonyAPIClient>();
+
+            var directions = new List<string>();
+            mockPonyAPI.Setup(m => m.PostStep(mazeId, Capture.In(directions)));
+
+            pathPoster = new PathPoster(mockPonyAPI.Object);
+
+            await pathPoster.Post(path);
+
+            Assert.AreEqual(new[] { "south", "east", "north", "west", "stay" }, directions);
         }
     }
 }
