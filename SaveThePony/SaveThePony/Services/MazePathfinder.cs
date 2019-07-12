@@ -6,7 +6,7 @@ using SaveThePony.Models;
 
 namespace SaveThePony.Services
 {
-    public class MazeSolver
+    public class MazePathfinder
     {
         class Node
         {

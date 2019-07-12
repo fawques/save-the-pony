@@ -12,7 +12,7 @@ namespace SaveThePonyTests
 {
     public class TestMazeSolver
     {
-        MazeSolver solver;
+        MazePathfinder solver;
 
         string mazeJson;
         readonly Point OUT_OF_BOUNDS = new Point(-1, -1);
@@ -29,7 +29,7 @@ namespace SaveThePonyTests
         [Test]
         public void CalculateManhattanDistance_SimpleCase()
         {
-            solver = new MazeSolver();
+            solver = new MazePathfinder();
 
             Point source = new Point(10, 13);
             Point destination = new Point(24, 1);
@@ -47,7 +47,7 @@ namespace SaveThePonyTests
                 difficulty: 0,
                 ponyPosition: new Point(0, 0),
                 endPoint: new Point(14, 14));
-            solver = new MazeSolver();
+            solver = new MazePathfinder();
 
             Path path = solver.Solve(maze);
 
@@ -76,7 +76,7 @@ namespace SaveThePonyTests
                     new Point(2,5),
                     new Point(3,5)
                 });
-            solver = new MazeSolver();
+            solver = new MazePathfinder();
 
             Path path = solver.Solve(maze);
 
@@ -112,7 +112,7 @@ namespace SaveThePonyTests
             MazeFactory factory = new MazeFactory(Mock.Of<IPonyAPIClient>());
             Maze maze = factory.FromJson(mazeJson);
             maze.Domokun.Position = new Point(-1, -1);
-            solver = new MazeSolver();
+            solver = new MazePathfinder();
 
 
             Path path = solver.Solve(maze);
@@ -148,7 +148,7 @@ namespace SaveThePonyTests
             Maze maze = factory.FromJson(mazeJson);
             // 4,0 is in the middle of the path, at position 9
             maze.Domokun.Position = new Point(4, 0);
-            solver = new MazeSolver();
+            solver = new MazePathfinder();
 
             Path path = solver.Solve(maze);
 
@@ -163,7 +163,7 @@ namespace SaveThePonyTests
             Maze maze = factory.FromJson(mazeJson);
             // This is seven tiles away of the endpoint, from there the paths collide
             maze.Domokun.Position = new Point(9, 14);
-            solver = new MazeSolver();
+            solver = new MazePathfinder();
 
             Path path = solver.Solve(maze);
 
@@ -178,7 +178,7 @@ namespace SaveThePonyTests
             Maze maze = factory.FromJson(mazeJson);
             // This behind the pony, so the monster will never catch the pony
             maze.Domokun.Position = new Point(5, 3);
-            solver = new MazeSolver();
+            solver = new MazePathfinder();
 
             Path path = solver.Solve(maze);
 

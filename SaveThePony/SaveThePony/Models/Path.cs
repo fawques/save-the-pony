@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SaveThePony.Services
+namespace SaveThePony.Models
 {
     public class Path
     {

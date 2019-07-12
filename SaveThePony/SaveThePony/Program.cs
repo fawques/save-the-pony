@@ -61,7 +61,7 @@ namespace SaveThePony
             var mazeVisual = await ponyAPI.GetVisualMaze(maze.MazeId);
             Console.WriteLine(mazeVisual);
 
-            MazeSolver solver = new MazeSolver();
+            MazePathfinder solver = new MazePathfinder();
             Path ponyPath = solver.Solve(maze);
             if (ponyPath.Length == 0)
             {
