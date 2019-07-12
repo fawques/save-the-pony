@@ -60,14 +60,14 @@ namespace SaveThePony
                 }
             }
 
-            int ponyX = apiMaze.pony[0] / width;
-            int ponyY = apiMaze.pony[0] % width;
+            int ponyY = apiMaze.pony[0] / width;
+            int ponyX = apiMaze.pony[0] % width;
 
-            int domokunX = apiMaze.domokun[0] / width;
-            int domokunY = apiMaze.domokun[0] % width;
+            int domokunY = apiMaze.domokun[0] / width;
+            int domokunX = apiMaze.domokun[0] % width;
 
-            int endpointX = apiMaze.endPont[0] / width;
-            int endpointY = apiMaze.endPont[0] % width;
+            int endpointY = apiMaze.endPont[0] / width;
+            int endpointX = apiMaze.endPont[0] % width;
 
             var maze = new Maze
             {
@@ -96,11 +96,19 @@ namespace SaveThePony
             if (column + 1 < width)
             {
                 eastData = apiMaze.data[currentIndex + 1];
+            } else if(column +1 == width)
+            {
+                eastData = new string[] { "west" };
             }
+
             if (row + 1 < height)
             {
                 southData = apiMaze.data[currentIndex + width];
+            } else if (row + 1 == height)
+            {
+                southData = new string[] { "north" };
             }
+
             CalculateAccesiblePoints(mazeTile, currentData, eastData, southData);
         }
 
