@@ -51,9 +51,8 @@ namespace SaveThePonyTests
             Path path = solver.Solve(maze);
 
 
-            Assert.AreEqual(29, path.Length); // MD == 28 + start
+            Assert.AreEqual(28, path.Length); // MD == 28 + start
             Assert.AreEqual(maze.Pony.Position, path.Source);
-            Assert.AreEqual(maze.Pony.Position, path.Steps.First());
             Assert.AreEqual(maze.EndPoint, path.Destination);
             Assert.AreEqual(maze.EndPoint, path.Steps.Last());
         }
@@ -82,7 +81,6 @@ namespace SaveThePonyTests
             Path expectedPath = new Path { Source = maze.Pony.Position, Destination = maze.EndPoint };
             expectedPath.Steps = new List<Point>
             {
-                new Point(1,2),
                 new Point(2,2),
                 new Point(3,2),
                 new Point(3,3),
@@ -98,9 +96,8 @@ namespace SaveThePonyTests
                 new Point(2,8)
             };
 
-            Assert.AreEqual(14, path.Length); // MD == 28 + start
+            Assert.AreEqual(13, path.Length);
             Assert.AreEqual(maze.Pony.Position, path.Source);
-            Assert.AreEqual(maze.Pony.Position, path.Steps.First());
             Assert.AreEqual(maze.EndPoint, path.Destination);
             Assert.AreEqual(maze.EndPoint, path.Steps.Last());
             Assert.AreEqual(expectedPath.Steps, path.Steps);
@@ -120,7 +117,6 @@ namespace SaveThePonyTests
             Path expectedPath = new Path { Source = maze.Pony.Position, Destination = maze.EndPoint };
             expectedPath.Steps = new List<Point>
             {
-                new Point(5,4),
                 new Point(4,4),
                 new Point(4,3),
                 new Point(4,2),
@@ -134,10 +130,9 @@ namespace SaveThePonyTests
                 new Point(3,1),
             };
 
-            Assert.AreEqual(expectedPath.Steps, path.Steps.Take(12));
-            Assert.AreEqual(82, path.Length);
+            Assert.AreEqual(expectedPath.Steps, path.Steps.Take(11));
+            Assert.AreEqual(81, path.Length);
             Assert.AreEqual(maze.Pony.Position, path.Source);
-            Assert.AreEqual(maze.Pony.Position, path.Steps.First());
             Assert.AreEqual(maze.EndPoint, path.Destination);
             Assert.AreEqual(maze.EndPoint, path.Steps.Last());
         }
@@ -184,7 +179,6 @@ namespace SaveThePonyTests
             Path expectedPath = new Path { Source = maze.Pony.Position, Destination = maze.EndPoint };
             expectedPath.Steps = new List<Point>
             {
-                new Point(5,4),
                 new Point(4,4),
                 new Point(4,3),
                 new Point(4,2),
@@ -198,10 +192,9 @@ namespace SaveThePonyTests
                 new Point(3,1),
             };
 
-            Assert.AreEqual(expectedPath.Steps, path.Steps.Take(12));
-            Assert.AreEqual(82, path.Length);
+            Assert.AreEqual(expectedPath.Steps, path.Steps.Take(11));
+            Assert.AreEqual(81, path.Length);
             Assert.AreEqual(maze.Pony.Position, path.Source);
-            Assert.AreEqual(maze.Pony.Position, path.Steps.First());
             Assert.AreEqual(maze.EndPoint, path.Destination);
             Assert.AreEqual(maze.EndPoint, path.Steps.Last());
         }

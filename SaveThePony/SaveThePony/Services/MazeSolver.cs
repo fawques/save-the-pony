@@ -127,7 +127,7 @@ namespace SaveThePony.Services
                 }
             }
 
-            Node current = finalNode;
+            Node current = finalNode?.Parent;
             while (current != null)
             {
                 pathSteps.Add(current.Tile.Position);
