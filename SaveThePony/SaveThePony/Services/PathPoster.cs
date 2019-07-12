@@ -18,7 +18,7 @@ namespace SaveThePony.Services
         {
             foreach (var step in path.Steps)
             {
-                await ponyClient.PostStep(new Guid(), "test");
+                await ponyClient.PostStep(path.MazeId, "down");
             }
         }
     }

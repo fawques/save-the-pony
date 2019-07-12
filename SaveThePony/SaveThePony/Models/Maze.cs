@@ -7,6 +7,7 @@ namespace SaveThePony.Models
 {
     public class Maze
     {
+        public Guid MazeId { get; set; }
         public MazeTile[,] Tiles { get; set; }
 
         public int Width { get; set; }

@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SaveThePony;
 using SaveThePony.Models;
 using SaveThePony.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using StreamReader = System.IO.StreamReader;
@@ -51,6 +52,7 @@ namespace SaveThePonyTests
             Path path = solver.Solve(maze);
 
 
+            Assert.AreEqual(maze.MazeId, path.MazeId);
             Assert.AreEqual(28, path.Length); // MD == 28 + start
             Assert.AreEqual(maze.Pony.Position, path.Source);
             Assert.AreEqual(maze.EndPoint, path.Destination);
@@ -96,6 +98,7 @@ namespace SaveThePonyTests
                 new Point(2,8)
             };
 
+            Assert.AreEqual(maze.MazeId, path.MazeId);
             Assert.AreEqual(13, path.Length);
             Assert.AreEqual(maze.Pony.Position, path.Source);
             Assert.AreEqual(maze.EndPoint, path.Destination);
@@ -130,6 +133,7 @@ namespace SaveThePonyTests
                 new Point(3,1),
             };
 
+            Assert.AreEqual(maze.MazeId, path.MazeId);
             Assert.AreEqual(expectedPath.Steps, path.Steps.Take(11));
             Assert.AreEqual(81, path.Length);
             Assert.AreEqual(maze.Pony.Position, path.Source);
@@ -148,6 +152,7 @@ namespace SaveThePonyTests
 
             Path path = solver.Solve(maze);
 
+            Assert.AreEqual(maze.MazeId, path.MazeId);
             Assert.AreEqual(0, path.Length);
         }
 
@@ -162,6 +167,7 @@ namespace SaveThePonyTests
 
             Path path = solver.Solve(maze);
 
+            Assert.AreEqual(maze.MazeId, path.MazeId);
             Assert.AreEqual(0, path.Length);
         }
 
@@ -192,6 +198,7 @@ namespace SaveThePonyTests
                 new Point(3,1),
             };
 
+            Assert.AreEqual(maze.MazeId, path.MazeId);
             Assert.AreEqual(expectedPath.Steps, path.Steps.Take(11));
             Assert.AreEqual(81, path.Length);
             Assert.AreEqual(maze.Pony.Position, path.Source);
@@ -203,6 +210,7 @@ namespace SaveThePonyTests
         {
             Maze maze = new Maze
             {
+                MazeId = Guid.NewGuid(),
                 Width = width,
                 Height = height,
                 Difficulty = difficulty,

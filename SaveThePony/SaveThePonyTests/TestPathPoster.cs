@@ -17,11 +17,10 @@ namespace SaveThePonyTests
         [Test]
         public async Task Post_SingleLine_SuccessfullyPosted()
         {
-            Mock<IPonyAPIClient> mockPonyAPI = new Mock<IPonyAPIClient>();
-            pathPoster = new PathPoster(mockPonyAPI.Object);
-
+            Guid mazeId = Guid.NewGuid();
             Path path = new Path
             {
+                MazeId = mazeId,
                 Source = new Point(0, 0),
                 Destination = new Point(0, 5),
                 Steps = new List<Point>
@@ -34,9 +33,20 @@ namespace SaveThePonyTests
                 }
             };
 
+            Mock<IPonyAPIClient> mockPonyAPI = new Mock<IPonyAPIClient>();
+            MockSequence mockSequence = new MockSequence();
+
+            mockPonyAPI.InSequence(mockSequence).Setup(api => api.PostStep(mazeId, "south"));
+            mockPonyAPI.InSequence(mockSequence).Setup(api => api.PostStep(mazeId, "south"));
+            mockPonyAPI.InSequence(mockSequence).Setup(api => api.PostStep(mazeId, "south"));
+            mockPonyAPI.InSequence(mockSequence).Setup(api => api.PostStep(mazeId, "south"));
+            mockPonyAPI.InSequence(mockSequence).Setup(api => api.PostStep(mazeId, "south"));
+
+            pathPoster = new PathPoster(mockPonyAPI.Object);
+
             await pathPoster.Post(path);
 
-            mockPonyAPI.Verify(api => api.PostStep(It.IsAny<Guid>(), It.IsAny<string>()), Times.Exactly(5));
+            mockPonyAPI.Verify(api => api.PostStep(mazeId, "down"), Times.Exactly(5));
         }
     }
 }

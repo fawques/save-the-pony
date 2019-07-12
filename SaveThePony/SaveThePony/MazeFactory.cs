@@ -34,7 +34,9 @@ namespace SaveThePony
         {
             var response = await ponyClient.GetMaze(mapId);
             string jsonMaze = await response.Content.ReadAsStringAsync();
-            return FromJson(jsonMaze);
+            var maze = FromJson(jsonMaze);
+            maze.MazeId = mapId;
+            return maze;
         }
 
         public Maze FromJson(string jsonMaze)
@@ -96,7 +98,8 @@ namespace SaveThePony
             if (column + 1 < width)
             {
                 eastData = apiMaze.data[currentIndex + 1];
-            } else if(column +1 == width)
+            }
+            else if (column + 1 == width)
             {
                 eastData = new string[] { "west" };
             }
@@ -104,7 +107,8 @@ namespace SaveThePony
             if (row + 1 < height)
             {
                 southData = apiMaze.data[currentIndex + width];
-            } else if (row + 1 == height)
+            }
+            else if (row + 1 == height)
             {
                 southData = new string[] { "north" };
             }

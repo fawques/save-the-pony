@@ -57,6 +57,7 @@ namespace SaveThePonyTests
             mockPonyAPI.Verify(p => p.GetMaze(mazeId), Times.Once);
             Assert.AreEqual(width, maze.Width);
             Assert.AreEqual(height, maze.Height);
+            Assert.AreEqual(mazeId, maze.MazeId);
         }
 
         [Test]
@@ -75,6 +76,7 @@ namespace SaveThePonyTests
             Maze maze = await mazeFactory.FromID(mazeId);
 
             mockPonyAPI.Verify(p => p.GetMaze(mazeId), Times.Once);
+            Assert.AreEqual(mazeId, maze.MazeId);
         }
 
         [Test]
@@ -95,6 +97,7 @@ namespace SaveThePonyTests
 
             mockPonyAPI.Verify(p => p.GetMaze(mazeId), Times.Once);
             Assert.IsNotNull(maze);
+            Assert.AreEqual(mazeId, maze.MazeId);
             Assert.AreEqual(15, maze.Width);
             Assert.AreEqual(15, maze.Height);
             Assert.AreEqual(15 * 15, maze.Tiles.Length);

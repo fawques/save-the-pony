@@ -45,6 +45,7 @@ namespace SaveThePony.Services
         {
             Path path = new Path
             {
+                MazeId = maze.MazeId,
                 Source = maze.Pony.Position,
                 Destination = maze.EndPoint,
                 Steps = CalculatePath(maze, maze.Pony.Position, maze.EndPoint, maze.Domokun.Position)
