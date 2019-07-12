@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SaveThePony.Models;
+using SaveThePony.Models.APIModels;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -9,6 +10,8 @@ namespace SaveThePony.Services
 {
     public class PonyAPIClient : IPonyAPIClient
     {
+        const string BASE_URL = "https://ponychallenge.trustpilot.com/pony-challenge/maze";
+
         class CreateParams
         {
             [JsonProperty(PropertyName = "maze-width")]
@@ -30,7 +33,7 @@ namespace SaveThePony.Services
 
         public async Task<HttpResponseMessage> CreateMaze(int width, int height, string ponyName, int difficulty)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, $"/");
+            var request = new HttpRequestMessage(HttpMethod.Post, BASE_URL);
             string json = JsonConvert.SerializeObject(new CreateParams { Width = width, Height = height, Difficulty = difficulty, Name = ponyName });
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -43,7 +46,7 @@ namespace SaveThePony.Services
         // Gets the list of services on github.
         public async Task<HttpResponseMessage> GetMaze(Guid mazeId)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"/{mazeId}");
+            var request = new HttpRequestMessage(HttpMethod.Get, BASE_URL + $"/{mazeId}");
 
             var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
@@ -53,7 +56,7 @@ namespace SaveThePony.Services
 
         public async Task<HttpResponseMessage> PostStep(Guid mazeId, string direction)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, $"/{mazeId}");
+            var request = new HttpRequestMessage(HttpMethod.Post, BASE_URL + $"/{mazeId}");
 
             string json = JsonConvert.SerializeObject(new { direction });
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -62,6 +65,16 @@ namespace SaveThePony.Services
             response.EnsureSuccessStatusCode();
 
             return response;
+        }
+
+        public async Task<string> GetVisualMaze(Guid mazeId)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, BASE_URL + $"/{mazeId}/print");
+
+            var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }

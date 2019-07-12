@@ -122,10 +122,6 @@ namespace SaveThePony.Services
                 {
                     break;
                 }
-                else
-                {
-                    Console.WriteLine("Couldn't find path, something went wrong");
-                }
             }
 
             Node current = finalNode?.Parent;

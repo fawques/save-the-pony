@@ -49,6 +49,7 @@ namespace SaveThePony.Services
                 {
                     direction = "west";
                 }
+                Console.WriteLine(current + " -> " + direction);
                 await ponyClient.PostStep(path.MazeId, direction);
                 current = step;
             }

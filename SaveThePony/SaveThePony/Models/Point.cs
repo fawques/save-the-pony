@@ -38,5 +38,10 @@ namespace SaveThePony.Models
                 return hash;
             }
         }
+
+        public override string ToString()
+        {
+            return $"({X},{Y})";
+        }
     }
 }

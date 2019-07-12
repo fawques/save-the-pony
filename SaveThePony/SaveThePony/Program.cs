@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SaveThePony.Models;
 using SaveThePony.Services;
 using System;
 using System.Net.Http;
@@ -16,28 +17,66 @@ namespace SaveThePony
             // ...
             // Add other services
             // ...
+            serviceCollection.AddScoped<IPonyAPIClient, PonyAPIClient>();
 
             Configure(serviceCollection);
 
             var services = serviceCollection.BuildServiceProvider();
-            Console.WriteLine("Creating a client...");
-            var ponyAPI = services.GetRequiredService<PonyAPIClient>();
+            var ponyAPI = services.GetRequiredService<IPonyAPIClient>();
+            MazeFactory mazeFactory = new MazeFactory(ponyAPI);
 
-            Console.WriteLine("Sending a request...");
-            try
+            Maze maze = null;
+            while (maze is null)
             {
-                var response = await ponyAPI.GetMaze(new Guid("407a48c9-74d8-4fc1-a390-e30c93fe3cf1"));
-                var data = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Response data:");
-                Console.WriteLine((object)data);
+                Console.WriteLine("Enter a maze GUID or press enter for a new maze:");
+                string input = Console.ReadLine();
+                if (input != "")
+                {
+                    if (Guid.TryParse(input, out Guid mazeId))
+                    {
+                        maze = await mazeFactory.FromID(mazeId);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Could not parse mazeId");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Creating new maze");
+                    Console.WriteLine("Enter width:");
+                    int width = int.Parse(Console.ReadLine());
+                    Console.WriteLine("Enter height:");
+                    int height = int.Parse(Console.ReadLine());
+                    Console.WriteLine("Enter difficulty:");
+                    int difficulty = int.Parse(Console.ReadLine());
+                    Console.WriteLine("Enter pony name:");
+                    string ponyName = Console.ReadLine().Trim();
+
+                    maze = await mazeFactory.Create(width, height, ponyName, difficulty);
+                    Console.WriteLine($"Maze ID {maze.MazeId} created.");
+
+                }
             }
-            catch (HttpRequestException e)
+            var mazeVisual = await ponyAPI.GetVisualMaze(maze.MazeId);
+            Console.WriteLine(mazeVisual);
+
+            MazeSolver solver = new MazeSolver();
+            Path ponyPath = solver.Solve(maze);
+            if (ponyPath.Length == 0)
             {
-                ILogger l = new Microsoft.Extensions.Logging.Logger<PonyAPIClient>(services.GetRequiredService<ILoggerFactory>());
-                l.LogError(e, "error getting maze");
+                Console.WriteLine("The little pony was so mesmerized with the rainbow lights that she is crossing paths with Domokun. Let's hope he is distracted too...");
+                // TODO: Post even if Domo
+            }
+            else
+            {
+                Console.WriteLine("The little pony got out! Here's the path:");
+                Console.WriteLine(ponyPath);
+                PathPoster pathPoster = new PathPoster(ponyAPI);
+                await pathPoster.Post(ponyPath);
             }
 
-            Console.WriteLine("Press the ANY key to exit...");
+            Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
 
             services.Dispose();
@@ -45,11 +84,7 @@ namespace SaveThePony
 
         public static void Configure(IServiceCollection services)
         {
-            services.AddHttpClient("ponyAPI", c =>
-            {
-                c.BaseAddress = new Uri("https://ponychallenge.trustpilot.com/pony-challenge/maze");
-            })
-            .AddTypedClient<PonyAPIClient>();
+            services.AddHttpClient<IPonyAPIClient, PonyAPIClient>();
         }
 
     }
