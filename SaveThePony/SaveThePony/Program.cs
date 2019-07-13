@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SaveThePony.Interfaces;
 using SaveThePony.Models;
 using SaveThePony.Services;
 using System;
@@ -12,18 +13,13 @@ namespace SaveThePony
     {
         static async Task Main(string[] args)
         {
-            var serviceCollection = new ServiceCollection();
-            //collection.AddScoped<IDemoService, DemoService>();
-            // ...
-            // Add other services
-            // ...
-            serviceCollection.AddScoped<IPonyAPIClient, PonyAPIClient>();
-
-            Configure(serviceCollection);
+            ServiceCollection serviceCollection = ConfigureServices();
 
             var services = serviceCollection.BuildServiceProvider();
-            var ponyAPI = services.GetRequiredService<IPonyAPIClient>();
-            MazeFactory mazeFactory = new MazeFactory(ponyAPI);
+            IPonyAPIClient ponyAPI = services.GetRequiredService<IPonyAPIClient>();
+            IMazeFactory factory = services.GetRequiredService<IMazeFactory>();
+            IMazePathfinder pathfinder = services.GetRequiredService<IMazePathfinder>();
+            IMazeWalker walker = services.GetRequiredService<IMazeWalker>();
 
             Maze maze = null;
             while (maze is null)
@@ -34,7 +30,7 @@ namespace SaveThePony
                 {
                     if (Guid.TryParse(input, out Guid mazeId))
                     {
-                        maze = await mazeFactory.FromID(mazeId);
+                        maze = await factory.FromID(mazeId);
                     }
                     else
                     {
@@ -43,20 +39,17 @@ namespace SaveThePony
                 }
                 else
                 {
-                    maze = await mazeFactory.Create();
+                    maze = await factory.Create();
                     Console.WriteLine($"Maze ID {maze.MazeId} created.");
 
                 }
             }
-            var mazeVisual = await ponyAPI.GetVisualMaze(maze.MazeId);
-            Console.WriteLine(mazeVisual);
+            Console.WriteLine(await ponyAPI.GetVisualMaze(maze.MazeId));
 
-            MazePathfinder solver = new MazePathfinder();
-            Path ponyPath = solver.Solve(maze);
+            Path ponyPath = pathfinder.Solve(maze);
             Console.WriteLine("Here's the ideal path of the pony, let's see it in action:");
             Console.WriteLine(ponyPath);
-            MazeWalker pathPoster = new MazeWalker(ponyAPI, mazeFactory);
-            await pathPoster.Walk(ponyPath);
+            await walker.Walk(ponyPath);
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
@@ -64,10 +57,16 @@ namespace SaveThePony
             services.Dispose();
         }
 
-        public static void Configure(IServiceCollection services)
+        static ServiceCollection ConfigureServices()
         {
-            services.AddHttpClient<IPonyAPIClient, PonyAPIClient>();
-        }
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddScoped<IPonyAPIClient, PonyAPIClient>();
+            serviceCollection.AddScoped<IMazeFactory, MazeFactory>();
+            serviceCollection.AddScoped<IMazePathfinder, MazePathfinder>();
+            serviceCollection.AddScoped<IMazeWalker, MazeWalker>();
 
+            serviceCollection.AddHttpClient<IPonyAPIClient, PonyAPIClient>();
+            return serviceCollection;
+        }
     }
 }

@@ -29,7 +29,6 @@ namespace SaveThePony.Services
                 while (currentMaze.Domokun.Position.Equals(steps.next)
                     || currentMaze.GetTile(currentMaze.Domokun.Position).AccessibleTiles.Any(t => t.Equals(steps.next)))
                 {
-                    Console.WriteLine("Domokun is lurking near. Shhh");
                     currentMaze = await TakeStep(currentPosition, currentPosition, currentMaze);
                 }
                 currentMaze = await TakeStep(currentPosition, steps.next, currentMaze);
@@ -42,13 +41,16 @@ namespace SaveThePony.Services
         async Task<Maze> TakeStep(Point currentPosition, Point next, Maze currentMaze)
         {
             string direction = GetDirection(currentPosition, next);
-            if (direction != "stay")
-            {
-                Console.WriteLine($"Run pony! Run {direction}!");
-            }
             await ponyClient.PostStep(currentMaze.MazeId, direction);
-            Console.WriteLine(await ponyClient.GetVisualMaze(currentMaze.MazeId));
+            string visualMaze = await ponyClient.GetVisualMaze(currentMaze.MazeId);
+            PrintStep(direction, visualMaze);
             return await factory.FromID(currentMaze.MazeId);
+        }
+
+        void PrintStep(string direction, string visualMaze)
+        {
+            Console.WriteLine(direction == "stay" ? "Domokun is lurking near. Shhh" : $"Run pony! Run {direction}!");
+            Console.WriteLine(visualMaze);
         }
 
         string GetDirection(Point current, Point next)
