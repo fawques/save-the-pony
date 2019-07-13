@@ -1,24 +1,66 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using SaveThePony.Interfaces;
 using SaveThePony.Models;
 using SaveThePony.Models.APIModels;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace SaveThePony
+namespace SaveThePony.Services
 {
-    public class MazeFactory
+    public class MazeFactory : IMazeFactory
     {
         IPonyAPIClient ponyClient;
 
         public MazeFactory(IPonyAPIClient ponyClient)
         {
             this.ponyClient = ponyClient;
+        }
+
+        public async Task<Maze> Create()
+        {
+            Console.WriteLine("Creating new maze");
+            Console.WriteLine("Enter width:");
+            int width = GetNumber(15, 25);
+            Console.WriteLine("Enter height:");
+            int height = GetNumber(15, 25);
+            Console.WriteLine("Enter difficulty:");
+            int difficulty = GetNumber(0, 10);
+            Console.WriteLine("Enter pony name:");
+            string ponyName = GetPonyName();
+            return await Create(width, height, ponyName, difficulty);
+        }
+
+        int GetNumber(int min, int max)
+        {
+            int size;
+            while (!int.TryParse(Console.ReadLine(), out size) || size < min || size > max)
+            {
+                Console.WriteLine($"Must be a number between {min} and {max}");
+            }
+            return size;
+        }
+
+        string GetPonyName()
+        {
+            List<string> validPonyNames = new List<string>
+            {
+                "Twilight Sparkle",
+                "Applejack",
+                "Fluttershy",
+                "Rarity",
+                "Pinkie Pie",
+                "Rainbow Dash",
+                "Spike",
+            };
+            string name = Console.ReadLine().Trim();
+            while (!validPonyNames.Contains(name))
+            {
+                Console.WriteLine("Must be a valid pony name");
+                name = Console.ReadLine().Trim();
+            }
+            return name;
         }
 
         public async Task<Maze> Create(int width, int height, string ponyName, int difficulty)

@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Priority_Queue;
+using SaveThePony.Interfaces;
 using SaveThePony.Models;
 
 namespace SaveThePony.Services
 {
-    public class MazePathfinder
+    public class MazePathfinder : IMazePathfinder
     {
         class Node
         {
@@ -48,26 +49,12 @@ namespace SaveThePony.Services
                 MazeId = maze.MazeId,
                 Source = maze.Pony.Position,
                 Destination = maze.EndPoint,
-                Steps = CalculatePath(maze, maze.Pony.Position, maze.EndPoint, maze.Domokun.Position)
+                Steps = CalculatePath(maze, maze.Pony.Position, maze.EndPoint)
             };
-
-            var domokunPath = CalculatePath(maze, maze.Domokun.Position, maze.Pony.Position);
-
-            for (int i = 0; i < Math.Min(path.Length, domokunPath.Count()); i++)
-            {
-                if (path.Steps.ElementAt(i).Equals(domokunPath.ElementAt(i)) ||
-                    domokunPath.ElementAt(i).Equals(path.Steps.ElementAtOrDefault(i + 1)))
-                {
-                    // Paths collide, the pony will die
-                    path.Steps = new List<Point>();
-                    break;
-                }
-            }
-
             return path;
         }
 
-        IEnumerable<Point> CalculatePath(Maze maze, Point source, Point destination, Point avoidPoint = null)
+        IEnumerable<Point> CalculatePath(Maze maze, Point source, Point destination)
         {
             List<Point> pathSteps = new List<Point>();
             SimplePriorityQueue<Node, int> openSet = new SimplePriorityQueue<Node, int>();
@@ -88,12 +75,6 @@ namespace SaveThePony.Services
                     if (closedSet.Contains(point))
                     {
                         // Already traversed
-                        continue;
-                    }
-
-                    if (point.Equals(avoidPoint))
-                    {
-                        // This tile is not accessible
                         continue;
                     }
 

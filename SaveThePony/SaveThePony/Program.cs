@@ -43,17 +43,7 @@ namespace SaveThePony
                 }
                 else
                 {
-                    Console.WriteLine("Creating new maze");
-                    Console.WriteLine("Enter width:");
-                    int width = int.Parse(Console.ReadLine());
-                    Console.WriteLine("Enter height:");
-                    int height = int.Parse(Console.ReadLine());
-                    Console.WriteLine("Enter difficulty:");
-                    int difficulty = int.Parse(Console.ReadLine());
-                    Console.WriteLine("Enter pony name:");
-                    string ponyName = Console.ReadLine().Trim();
-
-                    maze = await mazeFactory.Create(width, height, ponyName, difficulty);
+                    maze = await mazeFactory.Create();
                     Console.WriteLine($"Maze ID {maze.MazeId} created.");
 
                 }
@@ -63,18 +53,10 @@ namespace SaveThePony
 
             MazePathfinder solver = new MazePathfinder();
             Path ponyPath = solver.Solve(maze);
-            if (ponyPath.Length == 0)
-            {
-                Console.WriteLine("The little pony was so mesmerized with the rainbow lights that she is crossing paths with Domokun. Let's hope he is distracted too...");
-                // TODO: Post even if Domo
-            }
-            else
-            {
-                Console.WriteLine("The little pony got out! Here's the path:");
-                Console.WriteLine(ponyPath);
-                PathPoster pathPoster = new PathPoster(ponyAPI);
-                await pathPoster.Post(ponyPath);
-            }
+            Console.WriteLine("Here's the ideal path of the pony, let's see it in action:");
+            Console.WriteLine(ponyPath);
+            MazeWalker pathPoster = new MazeWalker(ponyAPI, mazeFactory);
+            await pathPoster.Walk(ponyPath);
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();

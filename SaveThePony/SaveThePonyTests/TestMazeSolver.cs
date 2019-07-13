@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using StreamReader = System.IO.StreamReader;
+using static SaveThePonyTests.Utils;
 
 namespace SaveThePonyTests
 {
@@ -15,7 +16,6 @@ namespace SaveThePonyTests
         MazePathfinder solver;
 
         string mazeJson;
-        readonly Point OUT_OF_BOUNDS = new Point(-1, -1);
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -139,132 +139,6 @@ namespace SaveThePonyTests
             Assert.AreEqual(maze.Pony.Position, path.Source);
             Assert.AreEqual(maze.EndPoint, path.Destination);
             Assert.AreEqual(maze.EndPoint, path.Steps.Last());
-        }
-
-        [Test]
-        public void GetShortestPath_MonsterInPath_NoPossiblePath()
-        {
-            MazeFactory factory = new MazeFactory(Mock.Of<IPonyAPIClient>());
-            Maze maze = factory.FromJson(mazeJson);
-            // 4,0 is in the middle of the path, at position 9
-            maze.Domokun.Position = new Point(4, 0);
-            solver = new MazePathfinder();
-
-            Path path = solver.Solve(maze);
-
-            Assert.AreEqual(maze.MazeId, path.MazeId);
-            Assert.AreEqual(0, path.Length);
-        }
-
-        [Test]
-        public void GetShortestPath_MonsterTooNear_NoPossiblePath()
-        {
-            MazeFactory factory = new MazeFactory(Mock.Of<IPonyAPIClient>());
-            Maze maze = factory.FromJson(mazeJson);
-            // This is seven tiles away of the endpoint, from there the paths collide
-            maze.Domokun.Position = new Point(9, 14);
-            solver = new MazePathfinder();
-
-            Path path = solver.Solve(maze);
-
-            Assert.AreEqual(maze.MazeId, path.MazeId);
-            Assert.AreEqual(0, path.Length);
-        }
-
-        [Test]
-        public void GetShortestPath_MonsterTooFarAway_PathIsShortest()
-        {
-            MazeFactory factory = new MazeFactory(Mock.Of<IPonyAPIClient>());
-            Maze maze = factory.FromJson(mazeJson);
-            // This behind the pony, so the monster will never catch the pony
-            maze.Domokun.Position = new Point(5, 3);
-            solver = new MazePathfinder();
-
-            Path path = solver.Solve(maze);
-
-            Path expectedPath = new Path { Source = maze.Pony.Position, Destination = maze.EndPoint };
-            expectedPath.Steps = new List<Point>
-            {
-                new Point(4,4),
-                new Point(4,3),
-                new Point(4,2),
-                new Point(5,2),
-                new Point(6,2),
-                new Point(6,1),
-                new Point(5,1),
-                new Point(4,1),
-                new Point(4,0),
-                new Point(3,0),
-                new Point(3,1),
-            };
-
-            Assert.AreEqual(maze.MazeId, path.MazeId);
-            Assert.AreEqual(expectedPath.Steps, path.Steps.Take(11));
-            Assert.AreEqual(81, path.Length);
-            Assert.AreEqual(maze.Pony.Position, path.Source);
-            Assert.AreEqual(maze.EndPoint, path.Destination);
-            Assert.AreEqual(maze.EndPoint, path.Steps.Last());
-        }
-
-        Maze CreateMaze(int width, int height, int difficulty, Point ponyPosition, Point endPoint, Point monsterPosition = null, List<Point> walls = null)
-        {
-            Maze maze = new Maze
-            {
-                MazeId = Guid.NewGuid(),
-                Width = width,
-                Height = height,
-                Difficulty = difficulty,
-                Tiles = new MazeTile[width, height],
-                Pony = new Pony(ponyPosition),
-                EndPoint = endPoint,
-                Domokun = new Monster(monsterPosition ?? OUT_OF_BOUNDS)
-            };
-
-            if (walls is null)
-            {
-                walls = new List<Point>();
-
-            }
-
-            for (int row = 0; row < maze.Height; row++)
-            {
-                for (int column = 0; column < maze.Width; column++)
-                {
-
-                    MazeTile tile = new MazeTile(column, row);
-                    maze.Tiles[column, row] = tile;
-
-                    if (tile.Position.X != 0)
-                    {
-                        Point accesible = new Point(tile.Position.X - 1, tile.Position.Y);
-                        AddAccessible(walls, tile, accesible);
-                    }
-                    if (tile.Position.Y != 0)
-                    {
-                        Point accesible = new Point(tile.Position.X, tile.Position.Y - 1);
-                        AddAccessible(walls, tile, accesible);
-                    }
-                    if (tile.Position.X != maze.Width - 1)
-                    {
-                        Point accesible = new Point(tile.Position.X + 1, tile.Position.Y);
-                        AddAccessible(walls, tile, accesible);
-                    }
-                    if (tile.Position.Y != maze.Height - 1)
-                    {
-                        Point accesible = new Point(tile.Position.X, tile.Position.Y + 1);
-                        AddAccessible(walls, tile, accesible);
-                    }
-                }
-            }
-            return maze;
-        }
-
-        void AddAccessible(List<Point> walls, MazeTile tile, Point accesible)
-        {
-            if (!walls.Contains(accesible))
-            {
-                tile.AccessibleTiles.Add(accesible);
-            }
         }
     }
 }

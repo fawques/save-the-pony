@@ -2,6 +2,7 @@ using Moq;
 using NUnit.Framework;
 using SaveThePony;
 using SaveThePony.Models;
+using SaveThePony.Services;
 using SaveThePonyTests;
 using System;
 using System.IO;
