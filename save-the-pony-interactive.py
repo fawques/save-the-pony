@@ -69,8 +69,7 @@ def main():
     try:
         while True:
             responseMaze = requests.get(DISPLAY_URL % maze_id)
-            screen.addstr(0, 0, responseMaze.text)
-            screen.move(0,0)
+            screen.addstr(1, 0, responseMaze.text)
             nextMove = ''
             char = screen.getch()
             if char == ord('q'):
@@ -92,12 +91,11 @@ def main():
                 screen.addstr(0, 0, 'stay ')
                 nextMove = 'stay'
 
-            screen.move(1,0)
-
             moveResponse = requests.post(MAZE_URL % maze_id,
                 json = {'direction': nextMove})
             if moveResponse.status_code != 200:
                 raise ValueError()
+            screen.addstr(0, 0, moveResponse.text)
     finally:
         # shut down cleanly
         curses.nocbreak(); screen.keypad(0); curses.echo()

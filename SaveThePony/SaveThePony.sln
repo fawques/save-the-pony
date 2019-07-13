@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveThePony", "SaveThePony\SaveThePony.csproj", "{1B5D99FD-CB52-4591-91F5-66DFEF8F8A19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveThePonyTests", "SaveThePonyTests\SaveThePonyTests.csproj", "{06F77C32-088A-4728-AE89-85F6DDCCE4CD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1B5D99FD-CB52-4591-91F5-66DFEF8F8A19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B5D99FD-CB52-4591-91F5-66DFEF8F8A19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B5D99FD-CB52-4591-91F5-66DFEF8F8A19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B5D99FD-CB52-4591-91F5-66DFEF8F8A19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06F77C32-088A-4728-AE89-85F6DDCCE4CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06F77C32-088A-4728-AE89-85F6DDCCE4CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06F77C32-088A-4728-AE89-85F6DDCCE4CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06F77C32-088A-4728-AE89-85F6DDCCE4CD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {933DDB52-447C-4376-8CE8-D6A022F15FC7}
+	EndGlobalSection
+EndGlobal
